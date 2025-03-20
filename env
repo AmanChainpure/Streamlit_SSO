@@ -3,4 +3,4 @@ os.environ['OPENAI_API_KEY'] = 'sk-proj-NQuxaivxRaED0FAX0giMdL58iXrFSE3K1vVV54EN
 
 
 from IPython.display import IFrame
-IFrame(src="http://localhost:8501", width=800, height=600
+IFrame(src="http://localhost:8501", width=800, height=600)
