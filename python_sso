@@ -1,0 +1,31 @@
+import ipywidgets as widgets
+from IPython.display import display, clear_output
+
+# Simulated user credentials
+VALID_CREDENTIALS = {"admin": "password123", "user": "test123"}
+
+# Create input fields
+username_input = widgets.Text(placeholder="Enter username")
+password_input = widgets.Password(placeholder="Enter password")  # Password input (hidden text)
+login_button = widgets.Button(description="Login", button_style='success')
+
+# Output area
+output = widgets.Output()
+
+# Function to validate login
+def authenticate_user(b):
+    with output:
+        clear_output()  # Clear previous output
+        username = username_input.value
+        password = password_input.value
+
+        if username in VALID_CREDENTIALS and VALID_CREDENTIALS[username] == password:
+            print("User authenticated successfully!")
+        else:
+            print("Invalid username or password. Try again.")
+
+# Bind button click to authentication function
+login_button.on_click(authenticate_user)
+
+# Display login form
+display(widgets.VBox([widgets.Label("Enter your credentials:"), username_input, password_input, login_button, output]))
