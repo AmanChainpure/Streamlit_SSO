@@ -1,0 +1,71 @@
+import streamlit as st
+import time
+import openai
+from helper import call_llm_azure_openai  # Ensure this function exists in helper.py
+
+# Dummy user credentials (Replace with a proper authentication system)
+VALID_USERNAME = "admin"
+VALID_PASSWORD = "password"
+
+# Initialize session state
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# Function to authenticate user
+def authenticate(username, password):
+    return username == VALID_USERNAME and password == VALID_PASSWORD
+
+# Chatbot response function using Azure OpenAI
+def get_chat_response(user_input):
+    time.sleep(2)  # Simulate processing delay
+    context = [
+        {"role": "system", "content": "You are a conversational AI chatbot."},
+        {"role": "user", "content": user_input}
+    ]
+    response, _, _, _ = call_llm_azure_openai(context)  # Fetch response from Azure OpenAI
+    return response
+
+# UI
+st.title("Secure AI Chatbot")
+
+if not st.session_state.authenticated:
+    # Authentication UI
+    with st.form("login_form"):
+        st.subheader("Login")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Login")
+
+        if submitted:
+            if authenticate(username, password):
+                st.session_state.authenticated = True
+                st.success("User authenticated successfully!")
+                time.sleep(1)
+                st.rerun()
+            else:
+                st.error("Invalid username or password")
+
+else:
+    # Chat UI
+    st.subheader("Chatbot")
+
+    # Display chat history
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"**You:** {msg['text']}")
+        else:
+            st.markdown(f"**Bot:** {msg['text']}")
+
+    # User input
+    user_input = st.text_input("Type your message:")
+
+    if st.button("Send") and user_input:
+        st.session_state.chat_history.append({"role": "user", "text": user_input})
+        
+        with st.spinner("Generating response..."):
+            bot_response = get_chat_response(user_input)
+        
+        st.session_state.chat_history.append({"role": "bot", "text": bot_response})
+        st.rerun()  # Refresh UI to show new messages
